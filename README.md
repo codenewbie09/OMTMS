@@ -1,41 +1,133 @@
 # OMTMS - Online Movie Ticketing Management System
 
-## Phase 1 Demo Guide
+## Project Overview
+
+OMTMS is a backend system for managing movie ticketing operations. The system allows administrators to manage movies and theaters, while customers can view shows and book tickets.
+
+This project implements Phase 1 of the development plan, which focuses on core infrastructure and basic CRUD operations.
+
+## Technology Stack
+
+- **Backend Framework:** Spring Boot 3.2 (Java 17)
+- **Build Tool:** Gradle
+- **Database:** PostgreSQL
+- **Authentication:** JWT (JSON Web Tokens)
+- **Security:** Spring Security
+
+## Project Structure
+
+```
+OMTMS/
+├── src/main/java/com/omtms/
+│   ├── config/          # Security configuration
+│   ├── controller/      # REST API controllers
+│   ├── service/         # Business logic layer
+│   ├── repository/      # Data access layer
+│   ├── entity/          # JPA entity classes
+│   ├── dto/             # Data transfer objects
+│   └── security/        # JWT authentication
+├── src/main/resources/
+│   └── application.yml
+├── build.gradle
+└── README.md
+```
+
+## Database Schema
+
+The system uses 9 tables:
+
+1. **users** - Base user table with authentication info
+2. **customer** - Customer profile linked to users
+3. **admin** - Admin profile linked to users
+4. **movie** - Movie information (title, genre, duration, rating)
+5. **theater** - Theater details (name, location, capacity)
+6. **show** - Show timings linked to movie and theater
+7. **seat** - Seats available in each theater
+8. **booking** - Ticket bookings
+9. **payment** - Payment records
+
+## Implemented Features (Phase 1)
+
+### Authentication
+- User registration (Admin/Customer)
+- Login with JWT token generation
+- Role-based access control
+
+### Movie Management (Admin only)
+- Create new movies
+- View all movies
+- View single movie by ID
+- Update movie details
+- Delete movies
+
+### Theater Management (Admin only)
+- Create new theaters
+- View all theaters
+- View single theater by ID
+- Update theater details
+- Delete theaters
+
+### Seat Management
+- View seats for a specific theater
+
+## API Endpoints
+
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/register | Register new user |
+| POST | /api/auth/login | Login and get JWT token |
+
+### Movies
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/movies | List all movies |
+| GET | /api/movies/{id} | Get movie by ID |
+| POST | /api/movies | Add new movie |
+| PUT | /api/movies/{id} | Update movie |
+| DELETE | /api/movies/{id} | Delete movie |
+
+### Theaters
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/theaters | List all theaters |
+| GET | /api/theaters/{id} | Get theater by ID |
+| POST | /api/theaters | Add new theater |
+| PUT | /api/theaters/{id} | Update theater |
+| DELETE | /api/theaters/{id} | Delete theater |
+| GET | /api/theaters/{id}/seats | View theater seats |
+
+## Running the Project
 
 ### Prerequisites
-1. PostgreSQL running on Docker (port 5432)
-2. Application running on port 8080
+- Java 17 or higher
+- PostgreSQL database
+- Gradle
 
-### Quick Start
+### Setup
 
+1. Create a PostgreSQL database named `omtms`:
+```sql
+CREATE DATABASE omtms;
+```
+
+2. Update database credentials in `src/main/resources/application.yml` if needed.
+
+3. Build and run the application:
 ```bash
-# 1. Start PostgreSQL
-docker start $(docker ps -aq --filter ancestor=postgres)
-
-# 2. Start the application
-cd ~/projects/OMTMS
 ./gradlew bootRun
 ```
 
----
+The application will start on `http://localhost:8080`
 
-## Demo Options
+### Testing the APIs
 
-### Option 1: Shell Script (Recommended)
+Use the demo script to test all endpoints:
 ```bash
-chmod +x demo.sh
 ./demo.sh
 ```
-This runs all API tests automatically and shows formatted output.
 
-### Option 2: Insomnia Collection
-1. Open Insomnia
-2. Import `OMTMS_Phase1_insomnia.json`
-3. Click "1. Login" to get token
-4. Copy token from response to environment variable
-5. Run other requests in order
-
-### Option 3: Manual Testing
+Or test manually:
 
 ```bash
 # Login
@@ -43,59 +135,27 @@ curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@test.com","password":"password"}'
 
-# Get Movies
+# Get Movies (use token from login)
 curl http://localhost:8080/api/movies \
   -H "Authorization: Bearer YOUR_TOKEN"
-
-# Add Movie
-curl -X POST http://localhost:8080/api/movies \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Dune","genre":"Sci-Fi","duration":155,"rating":8.5}'
-
-# Get Theaters
-curl http://localhost:8080/api/theaters \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Add Theater
-curl -X POST http://localhost:8080/api/theaters \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Screen 1","location":"Mall","capacity":100}'
 ```
 
----
-
-## Phase 1 Features
-
-| Feature | Status |
-|---------|--------|
-| PostgreSQL Database | ✅ 9 tables |
-| JWT Authentication | ✅ |
-| Movie CRUD | ✅ |
-| Theater CRUD | ✅ |
-| Role-based Security | ✅ |
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Register user |
-| POST | /api/auth/login | Login |
-| GET | /api/movies | List movies |
-| POST | /api/movies | Add movie |
-| PUT | /api/movies/{id} | Update movie |
-| DELETE | /api/movies/{id} | Delete movie |
-| GET | /api/theaters | List theaters |
-| POST | /api/theaters | Add theater |
-| PUT | /api/theaters/{id} | Update theater |
-| DELETE | /api/theaters/{id} | Delete theater |
-
----
-
 ## Test Credentials
-- Email: `admin@test.com`
-- Password: `password`
-- Role: `ADMIN`
+
+- Email: admin@test.com
+- Password: password
+- Role: ADMIN
+
+## Future Phases
+
+- Phase 2: Show scheduling, seat selection, booking flow
+- Phase 3: Payment processing, reports, notifications
+
+## Documentation
+
+Additional documentation files are included in the project:
+- SRS_document.pdf - System Requirements Specification
+- usecase_document.pdf - Use Case Documentation
+- Class_Diagram_Group30.png - Class Diagram
+- DFD_Group30/ - Data Flow Diagrams
+- Seq_usecase*.png - Sequence Diagrams
