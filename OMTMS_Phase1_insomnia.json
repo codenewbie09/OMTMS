@@ -1,0 +1,146 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-03-25T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v10.0.0",
+  "resources": [
+    {
+      "_id": "wrk_omtms",
+      "parentId": null,
+      "name": "OMTMS Phase 1",
+      "_type": "workspace"
+    },
+    {
+      "_id": "req_login",
+      "parentId": "fld_omtms",
+      "name": "1. Login - Get Token",
+      "url": "http://localhost:8080/api/auth/login",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"password\"\n}"
+      },
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_movies",
+      "parentId": "fld_omtms",
+      "name": "2. Get All Movies",
+      "url": "http://localhost:8080/api/movies",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_TOKEN_HERE"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_add_movie",
+      "parentId": "fld_omtms",
+      "name": "3. Add Movie",
+      "url": "http://localhost:8080/api/movies",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"title\": \"Dune Part Two\",\n  \"genre\": \"Sci-Fi\",\n  \"duration\": 166,\n  \"rating\": 8.6\n}"
+      },
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_TOKEN_HERE"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_theaters",
+      "parentId": "fld_omtms",
+      "name": "4. Get All Theaters",
+      "url": "http://localhost:8080/api/theaters",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_TOKEN_HERE"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_add_theater",
+      "parentId": "fld_omtms",
+      "name": "5. Add Theater",
+      "url": "http://localhost:8080/api/theaters",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"name\": \"Gold Screen\",\n  \"location\": \"City Center Mall\",\n  \"capacity\": 150\n}"
+      },
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_TOKEN_HERE"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_update_movie",
+      "parentId": "fld_omtms",
+      "name": "6. Update Movie",
+      "url": "http://localhost:8080/api/movies/1",
+      "method": "PUT",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"title\": \"Inception (Updated)\",\n  \"genre\": \"Sci-Fi\",\n  \"duration\": 148,\n  \"rating\": 9.0\n}"
+      },
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_TOKEN_HERE"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_delete_movie",
+      "parentId": "fld_omtms",
+      "name": "7. Delete Movie",
+      "url": "http://localhost:8080/api/movies/2",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer PASTE_TOKEN_HERE"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "fld_omtms",
+      "parentId": "wrk_omtms",
+      "name": "OMTMS APIs",
+      "_type": "request_group"
+    }
+  ]
+}
