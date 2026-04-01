@@ -25,6 +25,24 @@ public class Theater {
     @Column(nullable = false)
     private Integer capacity;
 
+    @Column(name = "balcony_capacity")
+    private Integer balconyCapacity = 30;
+
+    @Column(name = "premium_capacity")
+    private Integer premiumCapacity = 40;
+
+    @Column(name = "ordinary_capacity")
+    private Integer ordinaryCapacity = 30;
+
+    @Column(name = "balcony_price")
+    private Double balconyPrice = 350.0;
+
+    @Column(name = "premium_price")
+    private Double premiumPrice = 250.0;
+
+    @Column(name = "ordinary_price")
+    private Double ordinaryPrice = 150.0;
+
     @Column(name = "created_at")
     private String createdAt;
 

@@ -71,7 +71,16 @@ public class AuthService {
         }
         
         String token = jwtUtil.generateToken(savedUser.getEmail(), savedUser.getRole(), savedUser.getUserId());
-        return new AuthResponse(token, savedUser.getRole(), savedUser.getUserId());
+        
+        Long customerId = null;
+        if ("CUSTOMER".equals(request.getRole())) {
+            Customer customer = customerRepository.findByUserEmail(savedUser.getEmail()).orElse(null);
+            if (customer != null) {
+                customerId = customer.getCustomerId();
+            }
+        }
+        
+        return new AuthResponse(token, savedUser.getRole(), savedUser.getUserId(), customerId);
     }
     
     public AuthResponse login(LoginRequest request) {
@@ -83,6 +92,15 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getUserId());
-        return new AuthResponse(token, user.getRole(), user.getUserId());
+        
+        Long customerId = null;
+        if ("CUSTOMER".equals(user.getRole())) {
+            Customer customer = customerRepository.findByUserEmail(user.getEmail()).orElse(null);
+            if (customer != null) {
+                customerId = customer.getCustomerId();
+            }
+        }
+        
+        return new AuthResponse(token, user.getRole(), user.getUserId(), customerId);
     }
 }

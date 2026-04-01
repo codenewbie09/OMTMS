@@ -22,4 +22,19 @@ public class Customer {
 
     @Column(name = "created_at")
     private String createdAt;
+
+    @Column(name = "loyalty_id")
+    private String loyaltyId;
+
+    @Column(name = "loyalty_points")
+    private Integer loyaltyPoints = 0;
+
+    @Column(name = "purchase_count")
+    private Integer purchaseCount = 0;
+
+    @Column(name = "total_spent")
+    private Double totalSpent = 0.0;
+
+    @Column(name = "is_loyalty_member")
+    private Boolean isLoyaltyMember = false;
 }

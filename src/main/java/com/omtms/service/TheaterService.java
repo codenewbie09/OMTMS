@@ -72,6 +72,12 @@ public class TheaterService {
         dto.setName(theater.getName());
         dto.setLocation(theater.getLocation());
         dto.setCapacity(theater.getCapacity());
+        dto.setBalconyCapacity(theater.getBalconyCapacity());
+        dto.setPremiumCapacity(theater.getPremiumCapacity());
+        dto.setOrdinaryCapacity(theater.getOrdinaryCapacity());
+        dto.setBalconyPrice(theater.getBalconyPrice());
+        dto.setPremiumPrice(theater.getPremiumPrice());
+        dto.setOrdinaryPrice(theater.getOrdinaryPrice());
         return dto;
     }
 }

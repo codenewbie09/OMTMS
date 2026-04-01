@@ -33,4 +33,19 @@ public class Booking {
 
     @Column(nullable = false)
     private String status;
+
+    @Column(name = "ticket_code", unique = true)
+    private String ticketCode;
+
+    @Column(name = "cancellation_reason")
+    private String cancellationReason;
+
+    @Column(name = "refund_amount")
+    private Double refundAmount;
+    
+    @Column(name = "qr_code", columnDefinition = "TEXT")
+    private String qrCode;
+    
+    @Column(name = "discount_amount")
+    private Double discountAmount;
 }
