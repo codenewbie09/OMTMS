@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface ShowRepository extends JpaRepository<Show, Long> {
     List<Show> findByMovieMovieId(Long movieId);
-    List<Show> findByTheaterTheaterId(Long theaterId);
+    List<Show> findByHallHallId(Long hallId);
 }

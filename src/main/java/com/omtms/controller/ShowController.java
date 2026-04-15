@@ -43,9 +43,9 @@ public class ShowController {
         return ResponseEntity.ok(showService.getShowsByMovie(movieId));
     }
     
-    @GetMapping("/theater/{theaterId}")
-    public ResponseEntity<List<ShowDTO>> getShowsByTheater(@PathVariable Long theaterId) {
-        return ResponseEntity.ok(showService.getShowsByTheater(theaterId));
+    @GetMapping("/hall/{hallId}")
+    public ResponseEntity<List<ShowDTO>> getShowsByHall(@PathVariable Long hallId) {
+        return ResponseEntity.ok(showService.getShowsByHall(hallId));
     }
     
     @PostMapping

@@ -32,4 +32,7 @@ public class User {
 
     @Column(nullable = false)
     private String role;
+    
+    @Column(name = "created_at")
+    private String createdAt;
 }

@@ -7,9 +7,9 @@ import java.time.LocalTime;
 public class ShowDTO {
     private Long showId;
     private Long movieId;
-    private Long theaterId;
+    private Long hallId;
     private String movieName;
-    private String theaterName;
+    private String hallName;
     private LocalTime startTime;
     private LocalTime endTime;
     private Double price;

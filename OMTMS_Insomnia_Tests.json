@@ -1,0 +1,201 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2024-04-15T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v8.0.0",
+  "resources": [
+    {
+      "_id": "env_base",
+      "type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8080/api",
+        "token": ""
+      },
+      "isPrivate": false
+    },
+    {
+      "_id": "auth_login",
+      "type": "request",
+      "name": "Login",
+      "url": "{{ base_url }}/auth/login",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"email\": \"admin@omtms.com\",\n  \"password\": \"admin123\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+    {
+      "_id": "auth_register",
+      "type": "request",
+      "name": "Register",
+      "url": "{{ base_url }}/auth/register",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"email\": \"newuser@test.com\",\n  \"password\": \"test123\",\n  \"name\": \"Test User\",\n  \"role\": \"CUSTOMER\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    },
+    {
+      "_id": "movies_get_all",
+      "type": "request",
+      "name": "Get All Movies",
+      "url": "{{ base_url }}/movies",
+      "method": "GET",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "movies_create",
+      "type": "request",
+      "name": "Create Movie",
+      "url": "{{ base_url }}/movies",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"title\": \"Test Movie\",\n  \"genre\": \"Action\",\n  \"duration\": 120,\n  \"releaseDate\": \"2024-01-01\",\n  \"rating\": 4.5\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "theaters_get_all",
+      "type": "request",
+      "name": "Get All Theaters",
+      "url": "{{ base_url }}/theaters",
+      "method": "GET",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "theaters_create",
+      "type": "request",
+      "name": "Create Theater",
+      "url": "{{ base_url }}/theaters",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"name\": \"Test Theater\",\n  \"location\": \"Downtown\",\n  \"capacity\": 100\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "shows_get_all",
+      "type": "request",
+      "name": "Get All Shows",
+      "url": "{{ base_url }}/shows",
+      "method": "GET",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "shows_create",
+      "type": "request",
+      "name": "Create Show",
+      "url": "{{ base_url }}/shows",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"movieId\": 1,\n  \"theaterId\": 1,\n  \"startTime\": \"2024-12-01T14:00:00\",\n  \"price\": 250.00\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "shows_seats",
+      "type": "request",
+      "name": "Get Show Seats",
+      "url": "{{ base_url }}/shows/1/seats",
+      "method": "GET",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "booking_create",
+      "type": "request",
+      "name": "Create Booking",
+      "url": "{{ base_url }}/booking",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\n  \"customerId\": 1,\n  \"showId\": 1,\n  \"seatIds\": [1, 2, 3],\n  \"paymentMethod\": \"CARD\",\n  \"paymentStatus\": \"SUCCESS\"\n}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "booking_get_all",
+      "type": "request",
+      "name": "Get All Bookings",
+      "url": "{{ base_url }}/booking",
+      "method": "GET",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "booking_verify",
+      "type": "request",
+      "name": "Verify Ticket",
+      "url": "{{ base_url }}/booking/verify/TKT-123456",
+      "method": "POST",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "booking_cancel",
+      "type": "request",
+      "name": "Cancel Booking",
+      "url": "{{ base_url }}/booking/cancel/1",
+      "method": "POST",
+      "body": {
+        "mime": "application/json",
+        "text": "{\"reason\": \"Customer requested cancellation\"}"
+      },
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "reports_summary",
+      "type": "request",
+      "name": "Summary Report",
+      "url": "{{ base_url }}/reports/summary",
+      "method": "GET",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    },
+    {
+      "_id": "customer_loyalty",
+      "type": "request",
+      "name": "Get Loyalty Info",
+      "url": "{{ base_url }}/customers/1/loyalty",
+      "method": "GET",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{ token }}" }
+      ]
+    }
+  ]
+}

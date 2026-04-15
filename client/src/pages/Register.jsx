@@ -1,44 +1,218 @@
 import React, { useState } from 'react';
-import { authService, movieService, theaterService, showService } from '../services/api';
+import { authService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', address: '', password: '', role: 'CUSTOMER' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    email: '', 
+    phone: '', 
+    address: '', 
+    password: '',
+    role: 'CUSTOMER'
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
-      const { data } = await authService.register(formData);
+      const { data } = await authService.register({
+        ...formData,
+        role: 'CUSTOMER' // Force customer role
+      });
       login(data);
-      navigate(data.role === 'ADMIN' ? '/admin' : '/customer');
+      navigate('/customer');
     } catch (err) {
-      alert('Registration failed');
+      setError(err.response?.data?.message || 'Registration failed. Email may already be registered.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-        <form onSubmit={handleSubmit}>
-          <input type="text" placeholder="Name" onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-2 mb-4 border rounded" required />
-          <input type="email" placeholder="Email" onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full p-2 mb-4 border rounded" required />
-          <input type="text" placeholder="Phone" onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full p-2 mb-4 border rounded" />
-          <input type="text" placeholder="Address" onChange={(e) => setFormData({...formData, address: e.target.value})} className="w-full p-2 mb-4 border rounded" />
-          <input type="password" placeholder="Password" onChange={(e) => setFormData({...formData, password: e.target.value})} className="w-full p-2 mb-4 border rounded" required />
-          <select onChange={(e) => setFormData({...formData, role: e.target.value})} className="w-full p-2 mb-4 border rounded">
-            <option value="CUSTOMER">Customer</option>
-            <option value="SHOWMANAGER">Show Manager</option>
-            <option value="COUNTER_STAFF">Counter Staff</option>
-            <option value="GATESTAFF">Gate Staff</option>
-            <option value="ADMIN">Administrator</option>
-          </select>
-          <button type="submit" className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">Register</button>
-        </form>
-        <p className="mt-4 text-center">Already have an account? <a href="/login" className="text-blue-500">Login</a></p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 via-teal-500 to-cyan-500">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-400/10 via-teal-400/10 to-cyan-400/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-cyan-400/10 via-teal-400/10 to-green-400/10 rounded-full blur-3xl animate-float delay-150"></div>
+      </div>
+      
+      <div className="relative z-10 w-full max-w-md px-4">
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 transform transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-teal-600 rounded-full mb-6 shadow-xl animate-pulse-slow">
+              <div className="flex items-center justify-center h-full w-full">
+                <span className="text-4xl">🎟️</span>
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent mb-2">
+              Create Account
+            </h1>
+            <p className="text-lg text-gray-500">
+              Join OMTMS for easy ticket booking
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-3">
+              <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                placeholder="Enter your full name"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white/90 backdrop-blur-sm"
+                required
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">
+                Email Address
+              </label>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                </svg>
+              </div>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email address"
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                className="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white/90 backdrop-blur-sm"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-700">
+                Phone Number (Optional)
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                placeholder="+91 98765 43210"
+                value={formData.phone}
+                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white/90 backdrop-blur-sm"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="address" className="block mb-2 text-sm font-medium text-gray-700">
+                Address (Optional)
+              </label>
+              <input
+                id="address"
+                type="text"
+                placeholder="Your address"
+                value={formData.address}
+                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white/90 backdrop-blur-sm"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 002 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <input
+                id="password"
+                type="password"
+                placeholder="Create a strong password"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                className="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-white/90 backdrop-blur-sm"
+                required
+                autoComplete="new-password"
+                minLength={6}
+              />
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border-l-4 border-red-500 animate-pulse">
+                <div className="flex-shrink-0">
+                  <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-medium">{error}</p>
+                </div>
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-2xl transform transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-3">
+                  <svg className="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span>Creating account...</span>
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-3">
+                  <span>Create Account</span>
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-10 text-center">
+            <p className="text-sm text-gray-500">
+              Already have an account?{' '}
+              <button 
+                onClick={() => navigate('/login')}
+                className="font-semibold text-green-600 hover:text-green-800 transition-colors duration-200"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-gray-100">
+            <p className="text-xs text-center text-gray-400">
+              <strong>Note:</strong> Staff accounts (Show Manager, Counter Staff, Gate Staff, Admin) are created by the cinema management. Contact your administrator for staff access.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-10 flex justify-center gap-6">
+          <div className="flex items-center gap-3 text-white/80 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></span>
+              <span>System Online</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 bg-blue-400 rounded-full animate-pulse"></span>
+              <span>Database Connected</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

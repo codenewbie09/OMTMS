@@ -10,8 +10,6 @@ import com.omtms.repository.AdminRepository;
 import com.omtms.repository.CustomerRepository;
 import com.omtms.repository.UserRepository;
 import com.omtms.security.JwtUtil;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,20 +24,17 @@ public class AuthService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final AuthenticationManager authenticationManager;
     
     public AuthService(UserRepository userRepository, 
                        CustomerRepository customerRepository,
                        AdminRepository adminRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil,
-                       AuthenticationManager authenticationManager) {
+                       JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
     }
     
     @Transactional
@@ -84,12 +79,12 @@ public class AuthService {
     }
     
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
         
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getUserId());
         

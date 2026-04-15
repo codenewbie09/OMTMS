@@ -1,13 +1,13 @@
 spring:
   application:
     name: omtms
-  
+
   datasource:
     url: jdbc:postgresql://localhost:5432/omtms
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-  
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,6 +16,16 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  level:
+    com.omtms: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
 
 server:
   port: 8080

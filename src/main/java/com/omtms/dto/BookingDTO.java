@@ -11,7 +11,7 @@ public class BookingDTO {
     private String customerName;
     private Long showId;
     private String movieName;
-    private String theaterName;
+    private String hallName;
     private LocalDateTime showTime;
     private LocalDateTime bookingDate;
     private Double totalAmount;

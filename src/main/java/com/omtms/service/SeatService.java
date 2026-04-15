@@ -1,13 +1,11 @@
 package com.omtms.service;
 
 import com.omtms.dto.SeatDTO;
-import com.omtms.entity.Seat;
 import com.omtms.entity.Show;
 import com.omtms.entity.ShowSeat;
-import com.omtms.entity.Theater;
-import com.omtms.repository.SeatRepository;
+import com.omtms.entity.Hall;
 import com.omtms.repository.ShowSeatRepository;
-import com.omtms.repository.TheaterRepository;
+import com.omtms.repository.HallRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,36 +16,34 @@ import java.util.stream.Collectors;
 @Service
 public class SeatService {
     
-    private final SeatRepository seatRepository;
-    private final TheaterRepository theaterRepository;
+    private final HallRepository hallRepository;
     private final ShowSeatRepository showSeatRepository;
     
-    public SeatService(SeatRepository seatRepository, TheaterRepository theaterRepository,
+    public SeatService(HallRepository hallRepository,
                       ShowSeatRepository showSeatRepository) {
-        this.seatRepository = seatRepository;
-        this.theaterRepository = theaterRepository;
+        this.hallRepository = hallRepository;
         this.showSeatRepository = showSeatRepository;
     }
     
-    public List<SeatDTO> getSeatsByTheater(Long theaterId) {
-        if (!theaterRepository.existsById(theaterId)) {
-            throw new RuntimeException("Theater not found with id: " + theaterId);
+    public List<SeatDTO> getSeatsByTheater(Long hallId) {
+        if (!hallRepository.existsById(hallId)) {
+            throw new RuntimeException("Hall not found with id: " + hallId);
         }
         
-        return seatRepository.findByTheaterTheaterId(theaterId).stream()
-                .map(this::toDTO)
+        return showSeatRepository.findByShowShowId(hallId).stream()
+                .map(this::toShowSeatDTO)
                 .collect(Collectors.toList());
     }
     
     @Transactional
     public void initializeShowSeats(Show show) {
-        Theater theater = show.getTheater();
-        Integer balconyCap = theater.getBalconyCapacity() != null ? theater.getBalconyCapacity() : 30;
-        Integer premiumCap = theater.getPremiumCapacity() != null ? theater.getPremiumCapacity() : 40;
-        Integer ordinaryCap = theater.getOrdinaryCapacity() != null ? theater.getOrdinaryCapacity() : 30;
-        Double balconyPrice = theater.getBalconyPrice() != null ? theater.getBalconyPrice() : 350.0;
-        Double premiumPrice = theater.getPremiumPrice() != null ? theater.getPremiumPrice() : 250.0;
-        Double ordinaryPrice = theater.getOrdinaryPrice() != null ? theater.getOrdinaryPrice() : 150.0;
+        Hall hall = show.getHall();
+        Integer balconyCap = hall.getBalconyCapacity() != null ? hall.getBalconyCapacity() : 30;
+        Integer premiumCap = hall.getPremiumCapacity() != null ? hall.getPremiumCapacity() : 40;
+        Integer ordinaryCap = hall.getOrdinaryCapacity() != null ? hall.getOrdinaryCapacity() : 30;
+        Double balconyPrice = hall.getBalconyPrice() != null ? hall.getBalconyPrice() : 350.0;
+        Double premiumPrice = hall.getPremiumPrice() != null ? hall.getPremiumPrice() : 250.0;
+        Double ordinaryPrice = hall.getOrdinaryPrice() != null ? hall.getOrdinaryPrice() : 150.0;
         
         List<ShowSeat> showSeats = new ArrayList<>();
         
@@ -130,16 +126,6 @@ public class SeatService {
         }
     }
     
-    private SeatDTO toDTO(Seat seat) {
-        SeatDTO dto = new SeatDTO();
-        dto.setSeatId(seat.getSeatId());
-        dto.setSeatNumber(seat.getSeatNumber());
-        dto.setRow(seat.getRow());
-        dto.setSeatType(seat.getSeatType());
-        dto.setIsAvailable(seat.getIsAvailable());
-        return dto;
-    }
-    
     @Transactional
     public void blockSeat(Long seatId, String reason) {
         ShowSeat seat = showSeatRepository.findById(seatId)
@@ -164,6 +150,7 @@ public class SeatService {
         dto.setSeatNumber(seat.getSeatNumber());
         dto.setRow(seat.getRow());
         dto.setSeatType(seat.getSeatType());
+        dto.setPrice(seat.getPrice());
         boolean isBooked = seat.getIsBooked() != null && seat.getIsBooked();
         boolean isBlocked = seat.getIsBlocked() != null && seat.getIsBlocked();
         dto.setIsAvailable(!isBooked && !isBlocked);

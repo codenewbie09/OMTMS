@@ -1,0 +1,14 @@
+{
+  "name": "omtms-selenium-tests",
+  "version": "1.0.0",
+  "description": "OMTMS Selenium Test Suite",
+  "scripts": {
+    "test": "node tests/selenium/test.js"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.15.0"
+  },
+  "devDependencies": {
+    "chromedriver": "^120.0.0"
+  }
+}

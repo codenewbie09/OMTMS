@@ -4,15 +4,14 @@ import com.omtms.dto.CreateShowDTO;
 import com.omtms.dto.ShowDTO;
 import com.omtms.entity.Movie;
 import com.omtms.entity.Show;
-import com.omtms.entity.Theater;
+import com.omtms.entity.Hall;
 import com.omtms.repository.MovieRepository;
 import com.omtms.repository.ShowRepository;
-import com.omtms.repository.TheaterRepository;
+import com.omtms.repository.HallRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,14 +20,14 @@ public class ShowService {
     
     private final ShowRepository showRepository;
     private final MovieRepository movieRepository;
-    private final TheaterRepository theaterRepository;
+    private final HallRepository hallRepository;
     private final SeatService seatService;
     
     public ShowService(ShowRepository showRepository, MovieRepository movieRepository, 
-                      TheaterRepository theaterRepository, SeatService seatService) {
+                      HallRepository hallRepository, SeatService seatService) {
         this.showRepository = showRepository;
         this.movieRepository = movieRepository;
-        this.theaterRepository = theaterRepository;
+        this.hallRepository = hallRepository;
         this.seatService = seatService;
     }
     
@@ -50,8 +49,8 @@ public class ShowService {
                 .collect(Collectors.toList());
     }
     
-    public List<ShowDTO> getShowsByTheater(Long theaterId) {
-        return showRepository.findByTheaterTheaterId(theaterId).stream()
+    public List<ShowDTO> getShowsByHall(Long hallId) {
+        return showRepository.findByHallHallId(hallId).stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
@@ -61,12 +60,12 @@ public class ShowService {
         Movie movie = movieRepository.findById(createShowDTO.getMovieId())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
         
-        Theater theater = theaterRepository.findById(createShowDTO.getTheaterId())
-                .orElseThrow(() -> new RuntimeException("Theater not found"));
+        Hall hall = hallRepository.findById(createShowDTO.getHallId())
+                .orElseThrow(() -> new RuntimeException("Hall not found"));
         
         Show show = new Show();
         show.setMovie(movie);
-        show.setTheater(theater);
+        show.setHall(hall);
         show.setPrice(createShowDTO.getPrice());
         show.setCreatedAt(java.time.LocalDateTime.now().toString());
         
@@ -78,18 +77,16 @@ public class ShowService {
                 }
                 show.setStartTime(LocalTime.parse(timeStr));
             } catch (Exception e) {
-                throw new RuntimeException("Invalid start time format. Use HH:mm");
+                show.setStartTime(LocalTime.parse(createShowDTO.getStartTime()));
             }
         }
         
-        if (createShowDTO.getEndTime() != null && movie.getDuration() != null) {
-            show.setEndTime(LocalTime.parse(createShowDTO.getEndTime()));
-        } else if (movie.getDuration() != null && show.getStartTime() != null) {
-            show.setEndTime(show.getStartTime().plusMinutes(movie.getDuration()));
+        if (show.getStartTime() != null && movie.getDuration() != null) {
+            int duration = movie.getDuration();
+            show.setEndTime(show.getStartTime().plusMinutes(duration));
         }
         
         Show saved = showRepository.save(show);
-        
         seatService.initializeShowSeats(saved);
         
         return toDTO(saved);
@@ -106,10 +103,10 @@ public class ShowService {
             show.setMovie(movie);
         }
         
-        if (createShowDTO.getTheaterId() != null) {
-            Theater theater = theaterRepository.findById(createShowDTO.getTheaterId())
-                    .orElseThrow(() -> new RuntimeException("Theater not found"));
-            show.setTheater(theater);
+        if (createShowDTO.getHallId() != null) {
+            Hall hall = hallRepository.findById(createShowDTO.getHallId())
+                    .orElseThrow(() -> new RuntimeException("Hall not found"));
+            show.setHall(hall);
         }
         
         if (createShowDTO.getPrice() != null) {
@@ -136,9 +133,11 @@ public class ShowService {
         ShowDTO dto = new ShowDTO();
         dto.setShowId(show.getShowId());
         dto.setMovieId(show.getMovie().getMovieId());
-        dto.setTheaterId(show.getTheater().getTheaterId());
         dto.setMovieName(show.getMovie().getTitle());
-        dto.setTheaterName(show.getTheater().getName());
+        if (show.getHall() != null) {
+            dto.setHallId(show.getHall().getHallId());
+            dto.setHallName(show.getHall().getName());
+        }
         dto.setStartTime(show.getStartTime());
         dto.setEndTime(show.getEndTime());
         dto.setPrice(show.getPrice());

@@ -38,20 +38,19 @@ export const movieService = {
   delete: (id) => api.delete(`/movies/${id}`),
 };
 
-export const theaterService = {
-  getAll: () => api.get('/theaters'),
-  getById: (id) => api.get(`/theaters/${id}`),
-  create: (data) => api.post('/theaters', data),
-  update: (id, data) => api.put(`/theaters/${id}`, data),
-  delete: (id) => api.delete(`/theaters/${id}`),
-  getSeats: (id) => api.get(`/theaters/${id}/seats`),
+export const hallService = {
+  getAll: () => api.get('/halls'),
+  getById: (id) => api.get(`/halls/${id}`),
+  create: (data) => api.post('/halls', data),
+  update: (id, data) => api.put(`/halls/${id}`, data),
+  delete: (id) => api.delete(`/halls/${id}`),
 };
 
 export const showService = {
   getAll: () => api.get('/shows'),
   getById: (id) => api.get(`/shows/${id}`),
   getByMovie: (movieId) => api.get(`/shows/movie/${movieId}`),
-  getByTheater: (theaterId) => api.get(`/shows/theater/${theaterId}`),
+  getByHall: (hallId) => api.get(`/shows/hall/${hallId}`),
   getShowSeats: (showId) => api.get(`/shows/${showId}/seats`),
   create: (data) => api.post('/shows', data),
   update: (id, data) => api.put(`/shows/${id}`, data),
@@ -71,7 +70,7 @@ export const bookingService = {
 
 export const reportService = {
   getMovieReport: () => api.get('/reports/movies'),
-  getTheaterReport: () => api.get('/reports/theaters'),
+  getHallReport: () => api.get('/reports/halls'),
   getBookingReport: () => api.get('/reports/bookings'),
   getShowReport: () => api.get('/reports/shows'),
   getSummaryReport: () => api.get('/reports/summary'),

@@ -1,9 +1,9 @@
 package com.omtms.repository;
 
-import com.omtms.entity.Theater;
+import com.omtms.entity.Hall;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TheaterRepository extends JpaRepository<Theater, Long> {
+public interface HallRepository extends JpaRepository<Hall, Long> {
 }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { movieService, theaterService, showService, bookingService, reportService } from '../services/api';
+import { movieService, hallService, showService, bookingService, reportService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function ManagerDashboard() {
   const [movies, setMovies] = useState([]);
-  const [theaters, setTheaters] = useState([]);
+  const [halls, setHalls] = useState([]);
   const [shows, setShows] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -22,7 +22,7 @@ export default function ManagerDashboard() {
 
   const loadData = async () => {
     setMovies((await movieService.getAll()).data);
-    setTheaters((await theaterService.getAll()).data);
+    setHalls((await hallService.getAll()).data);
     setShows((await showService.getAll()).data);
     setBookings((await bookingService.getAll()).data);
   };
@@ -32,8 +32,8 @@ export default function ManagerDashboard() {
     if (item) {
       setFormData(item);
     } else {
-      setFormData(type === 'shows' ? { movieId: '', theaterId: '', startTime: '', price: '' } : 
-                  type === 'theaters' ? { name: '', location: '', capacity: '' } :
+      setFormData(type === 'shows' ? { movieId: '', hallId: '', startTime: '', price: '' } : 
+                  type === 'halls' ? { name: '', location: '', capacity: '' } :
                   { title: '', genre: '', duration: '', releaseDate: '', rating: '' });
     }
   };
@@ -44,7 +44,7 @@ export default function ManagerDashboard() {
       if (formData.movieId) {
         await showService.create(formData);
       } else if (formData.capacity) {
-        await theaterService.create(formData);
+        await hallService.create(formData);
       } else {
         await movieService.create(formData);
       }
@@ -59,7 +59,7 @@ export default function ManagerDashboard() {
     if (!confirm('Are you sure?')) return;
     try {
       if (type === 'movie') await movieService.delete(id);
-      if (type === 'theater') await theaterService.delete(id);
+      if (type === 'hall') await hallService.delete(id);
       if (type === 'show') await showService.delete(id);
       loadData();
     } catch (err) {
@@ -93,7 +93,7 @@ export default function ManagerDashboard() {
     cancelledBookings: bookings.filter(b => b.status === 'CANCELLED').length,
     totalRevenue: bookings.filter(b => b.status === 'CONFIRMED').reduce((sum, b) => sum + (b.totalAmount || 0), 0),
     totalMovies: movies.length,
-    totalTheaters: theaters.length,
+    totalHalls: halls.length,
     totalShows: shows.length
   };
 
@@ -106,7 +106,7 @@ export default function ManagerDashboard() {
       
       <div className="p-4">
         <div className="flex gap-2 mb-4 flex-wrap">
-          {['dashboard', 'movies', 'theaters', 'shows', 'bookings', 'verify', 'reports'].map(tab => (
+          {['dashboard', 'movies', 'halls', 'shows', 'bookings', 'verify', 'reports'].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} 
               className={`px-4 py-2 rounded ${activeTab === tab ? 'bg-blue-800 text-white' : 'bg-white'}`}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -150,16 +150,24 @@ export default function ManagerDashboard() {
           </div>
         )}
         
-        {activeTab === 'theaters' && (
+        {activeTab === 'halls' && (
           <div className="bg-white p-4 rounded">
             <div className="flex justify-between mb-4">
-              <h2 className="text-xl font-bold">Theaters</h2>
-              <button onClick={() => openForm('theaters')} className="bg-blue-800 text-white px-4 py-1 rounded">+ Add Theater</button>
+              <h2 className="text-xl font-bold">Halls</h2>
+              <button onClick={() => openForm('halls')} className="bg-blue-800 text-white px-4 py-1 rounded">+ Add Hall</button>
             </div>
             <table className="w-full">
-              <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Capacity</th><th>Actions</th></tr></thead>
+              <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Cap</th><th>B/P/O</th><th>$/B/P/O</th><th>Actions</th></tr></thead>
               <tbody>
-                {theaters.map(t => <tr key={t.theaterId}><td>{t.theaterId}</td><td>{t.name}</td><td>{t.location}</td><td>{t.capacity}</td><td><button onClick={() => handleDelete('theater', t.theaterId)} className="text-red-500">Delete</button></td></tr>)}
+                {halls.map(t => <tr key={t.hallId}>
+                  <td>{t.hallId}</td>
+                  <td>{t.name}</td>
+                  <td>{t.location}</td>
+                  <td>{t.capacity}</td>
+                  <td>{t.balconyCapacity}/{t.premiumCapacity}/{t.ordinaryCapacity}</td>
+                  <td>{t.balconyPrice}/{t.premiumPrice}/{t.ordinaryPrice}</td>
+                  <td><button onClick={() => handleDelete('hall', t.hallId)} className="text-red-500">Delete</button></td>
+                </tr>)}
               </tbody>
             </table>
           </div>
@@ -172,9 +180,9 @@ export default function ManagerDashboard() {
               <button onClick={() => openForm('shows')} className="bg-blue-800 text-white px-4 py-1 rounded">+ Add Show</button>
             </div>
             <table className="w-full">
-              <thead><tr><th>ID</th><th>Movie</th><th>Theater</th><th>Time</th><th>Price</th><th>Actions</th></tr></thead>
+              <thead><tr><th>ID</th><th>Movie</th><th>Hall</th><th>Time</th><th>Price</th><th>Actions</th></tr></thead>
               <tbody>
-                {shows.map(s => <tr key={s.showId}><td>{s.showId}</td><td>{s.movieName}</td><td>{s.theaterName}</td><td>{s.startTime}</td><td>${s.price}</td><td><button onClick={() => handleDelete('show', s.showId)} className="text-red-500">Delete</button></td></tr>)}
+                {shows.map(s => <tr key={s.showId}><td>{s.showId}</td><td>{s.movieName}</td><td>{s.hallName}</td><td>{s.startTime}</td><td>${s.price}</td><td><button onClick={() => handleDelete('show', s.showId)} className="text-red-500">Delete</button></td></tr>)}
               </tbody>
             </table>
           </div>
@@ -216,7 +224,7 @@ export default function ManagerDashboard() {
                   <div>
                     <p className="font-bold">Valid Ticket</p>
                     <p>Movie: {verifyResult.movieName}</p>
-                    <p>Theater: {verifyResult.theaterName}</p>
+                    <p>Hall: {verifyResult.hallName}</p>
                   </div>
                 )}
               </div>
@@ -231,7 +239,7 @@ export default function ManagerDashboard() {
               <button onClick={async () => { const r = await reportService.getSummaryReport(); alert(JSON.stringify(r.data, null, 2)); }} className="bg-blue-800 text-white p-4 rounded">Summary Report</button>
               <button onClick={async () => { const r = await reportService.getBookingReport(); alert(JSON.stringify(r.data, null, 2)); }} className="bg-blue-800 text-white p-4 rounded">Booking Report</button>
               <button onClick={async () => { const r = await reportService.getMovieReport(); alert(JSON.stringify(r.data, null, 2)); }} className="bg-blue-800 text-white p-4 rounded">Movie Report</button>
-              <button onClick={async () => { const r = await reportService.getTheaterReport(); alert(JSON.stringify(r.data, null, 2)); }} className="bg-blue-800 text-white p-4 rounded">Theater Report</button>
+              <button onClick={async () => { const r = await reportService.getHallReport(); alert(JSON.stringify(r.data, null, 2)); }} className="bg-blue-800 text-white p-4 rounded">Hall Report</button>
             </div>
           </div>
         )}
@@ -240,12 +248,47 @@ export default function ManagerDashboard() {
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-96">
-            <h3 className="text-xl font-bold mb-4">Add New</h3>
+            <h3 className="text-xl font-bold mb-4">{activeTab === 'movies' ? 'Add Movie' : activeTab === 'halls' ? 'Add Hall' : 'Add Show'}</h3>
             <form onSubmit={handleSubmit}>
-              <input type="text" placeholder="Title" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 mb-3 border rounded" />
-              <input type="text" placeholder="Genre" value={formData.genre || ''} onChange={e => setFormData({...formData, genre: e.target.value})} className="w-full p-2 mb-3 border rounded" />
-              <input type="number" placeholder="Duration" value={formData.duration || ''} onChange={e => setFormData({...formData, duration: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded" />
-              <input type="number" placeholder="Rating" value={formData.rating || ''} onChange={e => setFormData({...formData, rating: parseFloat(e.target.value)})} className="w-full p-2 mb-3 border rounded" />
+              {activeTab === 'movies' && (
+                <>
+                  <input type="text" placeholder="Title" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 mb-3 border rounded" />
+                  <input type="text" placeholder="Genre" value={formData.genre || ''} onChange={e => setFormData({...formData, genre: e.target.value})} className="w-full p-2 mb-3 border rounded" />
+                  <input type="number" placeholder="Duration" value={formData.duration || ''} onChange={e => setFormData({...formData, duration: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded" />
+                  <input type="number" placeholder="Rating" value={formData.rating || ''} onChange={e => setFormData({...formData, rating: parseFloat(e.target.value)})} className="w-full p-2 mb-3 border rounded" />
+                </>
+              )}
+              {activeTab === 'halls' && (
+                <>
+                  <input type="text" placeholder="Name" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 mb-3 border rounded" />
+                  <input type="text" placeholder="Location" value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 mb-3 border rounded" />
+                  <input type="number" placeholder="Total Capacity" value={formData.capacity || ''} onChange={e => setFormData({...formData, capacity: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded" />
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    <input type="number" placeholder="Balcony Cap" value={formData.balconyCapacity || ''} onChange={e => setFormData({...formData, balconyCapacity: parseInt(e.target.value)})} className="w-full p-2 border rounded" />
+                    <input type="number" placeholder="Premium Cap" value={formData.premiumCapacity || ''} onChange={e => setFormData({...formData, premiumCapacity: parseInt(e.target.value)})} className="w-full p-2 border rounded" />
+                    <input type="number" placeholder="Ordinary Cap" value={formData.ordinaryCapacity || ''} onChange={e => setFormData({...formData, ordinaryCapacity: parseInt(e.target.value)})} className="w-full p-2 border rounded" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    <input type="number" placeholder="Balcony $" value={formData.balconyPrice || ''} onChange={e => setFormData({...formData, balconyPrice: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
+                    <input type="number" placeholder="Premium $" value={formData.premiumPrice || ''} onChange={e => setFormData({...formData, premiumPrice: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
+                    <input type="number" placeholder="Ordinary $" value={formData.ordinaryPrice || ''} onChange={e => setFormData({...formData, ordinaryPrice: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
+                  </div>
+                </>
+              )}
+              {activeTab === 'shows' && (
+                <>
+                  <select value={formData.movieId || ''} onChange={e => setFormData({...formData, movieId: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded">
+                    <option value="">Select Movie</option>
+                    {movies.map(m => <option key={m.movieId} value={m.movieId}>{m.title}</option>)}
+                  </select>
+                  <select value={formData.hallId || ''} onChange={e => setFormData({...formData, hallId: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded">
+                    <option value="">Select Hall</option>
+                    {halls.map(h => <option key={h.hallId} value={h.hallId}>{h.name}</option>)}
+                  </select>
+                  <input type="datetime-local" value={formData.startTime || ''} onChange={e => setFormData({...formData, startTime: e.target.value})} className="w-full p-2 mb-3 border rounded" />
+                  <input type="number" placeholder="Price" value={formData.price || ''} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} className="w-full p-2 mb-3 border rounded" />
+                </>
+              )}
               <div className="flex gap-2">
                 <button type="submit" className="flex-1 bg-blue-800 text-white p-2 rounded">Create</button>
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 bg-gray-500 text-white p-2 rounded">Cancel</button>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { movieService, theaterService, showService, reportService } from '../services/api';
+import { movieService, hallService, showService, reportService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const [movies, setMovies] = useState([]);
-  const [theaters, setTheaters] = useState([]);
+  const [halls, setHalls] = useState([]);
   const [shows, setShows] = useState([]);
   const [reportData, setReportData] = useState(null);
   const [activeTab, setActiveTab] = useState('movies');
@@ -21,14 +21,14 @@ export default function AdminDashboard() {
 
   const loadData = async () => {
     setMovies((await movieService.getAll()).data);
-    setTheaters((await theaterService.getAll()).data);
+    setHalls((await hallService.getAll()).data);
     setShows((await showService.getAll()).data);
   };
 
   const handleDelete = async (type, id) => {
     if (!confirm('Are you sure you want to delete this?')) return;
     if (type === 'movie') await movieService.delete(id);
-    if (type === 'theater') await theaterService.delete(id);
+    if (type === 'hall') await hallService.delete(id);
     if (type === 'show') await showService.delete(id);
     loadData();
   };
@@ -40,8 +40,8 @@ export default function AdminDashboard() {
     if (item) {
       setFormData(item);
     } else {
-      setFormData(type === 'shows' ? { movieId: '', theaterId: '', startTime: '', price: '' } : 
-                  type === 'theaters' ? { name: '', location: '', capacity: '' } :
+      setFormData(type === 'shows' ? { movieId: '', hallId: '', startTime: '', price: '' } : 
+                  type === 'halls' ? { name: '', location: '', capacity: '' } :
                   { title: '', genre: '', duration: '', releaseDate: '', rating: '' });
     }
   };
@@ -51,11 +51,11 @@ export default function AdminDashboard() {
     try {
       if (editingItem) {
         if (activeTab === 'movies') await movieService.update(editingItem.movieId, formData);
-        if (activeTab === 'theaters') await theaterService.update(editingItem.theaterId, formData);
+        if (activeTab === 'halls') await hallService.update(editingItem.hallId, formData);
         if (activeTab === 'shows') await showService.update(editingItem.showId, formData);
       } else {
         if (activeTab === 'movies') await movieService.create(formData);
-        if (activeTab === 'theaters') await theaterService.create(formData);
+        if (activeTab === 'halls') await hallService.create(formData);
         if (activeTab === 'shows') await showService.create(formData);
       }
       setShowForm(false);
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
       switch (reportType) {
         case 'summary': response = await reportService.getSummaryReport(); break;
         case 'movies': response = await reportService.getMovieReport(); break;
-        case 'theaters': response = await reportService.getTheaterReport(); break;
+        case 'halls': response = await reportService.getHallReport(); break;
         case 'shows': response = await reportService.getShowReport(); break;
         case 'bookings': response = await reportService.getBookingReport(); break;
         default: response = await reportService.getSummaryReport();
@@ -97,11 +97,39 @@ export default function AdminDashboard() {
               <input type="number" step="0.1" placeholder="Rating" value={formData.rating || ''} onChange={e => setFormData({...formData, rating: parseFloat(e.target.value)})} className="w-full p-2 mb-3 border rounded" required />
             </>
           )}
-          {activeTab === 'theaters' && (
+          {activeTab === 'halls' && (
             <>
               <input type="text" placeholder="Name" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 mb-3 border rounded" required />
               <input type="text" placeholder="Location" value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 mb-3 border rounded" required />
-              <input type="number" placeholder="Capacity" value={formData.capacity || ''} onChange={e => setFormData({...formData, capacity: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded" required />
+              <input type="number" placeholder="Total Capacity" value={formData.capacity || ''} onChange={e => setFormData({...formData, capacity: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded" required />
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div>
+                  <label className="text-xs text-gray-600">Balcony Cap</label>
+                  <input type="number" placeholder="Balcony" value={formData.balconyCapacity || ''} onChange={e => setFormData({...formData, balconyCapacity: parseInt(e.target.value)})} className="w-full p-2 border rounded" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-600">Premium Cap</label>
+                  <input type="number" placeholder="Premium" value={formData.premiumCapacity || ''} onChange={e => setFormData({...formData, premiumCapacity: parseInt(e.target.value)})} className="w-full p-2 border rounded" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-600">Ordinary Cap</label>
+                  <input type="number" placeholder="Ordinary" value={formData.ordinaryCapacity || ''} onChange={e => setFormData({...formData, ordinaryCapacity: parseInt(e.target.value)})} className="w-full p-2 border rounded" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div>
+                  <label className="text-xs text-gray-600">Balcony Price</label>
+                  <input type="number" placeholder="₹350" value={formData.balconyPrice || ''} onChange={e => setFormData({...formData, balconyPrice: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-600">Premium Price</label>
+                  <input type="number" placeholder="₹250" value={formData.premiumPrice || ''} onChange={e => setFormData({...formData, premiumPrice: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-600">Ordinary Price</label>
+                  <input type="number" placeholder="₹150" value={formData.ordinaryPrice || ''} onChange={e => setFormData({...formData, ordinaryPrice: parseFloat(e.target.value)})} className="w-full p-2 border rounded" />
+                </div>
+              </div>
             </>
           )}
           {activeTab === 'shows' && (
@@ -110,9 +138,9 @@ export default function AdminDashboard() {
                 <option value="">Select Movie</option>
                 {movies.map(m => <option key={m.movieId} value={m.movieId}>{m.title}</option>)}
               </select>
-              <select value={formData.theaterId || ''} onChange={e => setFormData({...formData, theaterId: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded" required>
-                <option value="">Select Theater</option>
-                {theaters.map(t => <option key={t.theaterId} value={t.theaterId}>{t.name}</option>)}
+              <select value={formData.hallId || ''} onChange={e => setFormData({...formData, hallId: parseInt(e.target.value)})} className="w-full p-2 mb-3 border rounded" required>
+                <option value="">Select Hall</option>
+                {halls.map(t => <option key={t.hallId} value={t.hallId}>{t.name}</option>)}
               </select>
               <input type="datetime-local" placeholder="Start Time" value={formData.startTime || ''} onChange={e => setFormData({...formData, startTime: e.target.value})} className="w-full p-2 mb-3 border rounded" required />
               <input type="number" placeholder="Price" value={formData.price || ''} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} className="w-full p-2 mb-3 border rounded" required />
@@ -131,7 +159,7 @@ export default function AdminDashboard() {
     if (!reportData) {
       return (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {['summary', 'movies', 'theaters', 'shows', 'bookings'].map(type => (
+          {['summary', 'movies', 'halls', 'shows', 'bookings'].map(type => (
             <button key={type} onClick={() => loadReport(type)} className="bg-white p-6 rounded shadow hover:bg-gray-50">
               <h3 className="text-lg font-semibold capitalize">{type} Report</h3>
               <p className="text-gray-500">Click to generate</p>
@@ -163,7 +191,7 @@ export default function AdminDashboard() {
       </nav>
       <div className="p-4">
         <div className="flex gap-2 mb-4">
-          {['movies', 'theaters', 'shows', 'reports'].map(tab => (
+          {['movies', 'halls', 'shows', 'reports'].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 rounded ${activeTab === tab ? 'bg-blue-500 text-white' : 'bg-white'}`}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
@@ -189,19 +217,19 @@ export default function AdminDashboard() {
           </div>
         )}
         
-        {activeTab === 'theaters' && (
+        {activeTab === 'halls' && (
           <div className="bg-white p-4 rounded">
             <div className="flex justify-between mb-4">
-              <h2 className="text-xl font-bold">Theaters</h2>
-              <button onClick={() => openForm('theaters')} className="bg-green-500 text-white px-4 py-1 rounded">+ Add Theater</button>
+              <h2 className="text-xl font-bold">Halls</h2>
+              <button onClick={() => openForm('halls')} className="bg-green-500 text-white px-4 py-1 rounded">+ Add Hall</button>
             </div>
             <table className="w-full">
               <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Capacity</th><th>Actions</th></tr></thead>
               <tbody>
-                {theaters.length === 0 ? <tr><td colSpan={5} className="text-center py-4">No theaters yet</td></tr> :
-                theaters.map(t => <tr key={t.theaterId}><td>{t.theaterId}</td><td>{t.name}</td><td>{t.location}</td><td>{t.capacity}</td><td>
-                  <button onClick={() => openForm('theaters', t)} className="text-blue-500 mr-2">Edit</button>
-                  <button onClick={() => handleDelete('theater', t.theaterId)} className="text-red-500">Delete</button>
+                {halls.length === 0 ? <tr><td colSpan={5} className="text-center py-4">No halls yet</td></tr> :
+                halls.map(t => <tr key={t.hallId}><td>{t.hallId}</td><td>{t.name}</td><td>{t.location}</td><td>{t.capacity}</td><td>
+                  <button onClick={() => openForm('halls', t)} className="text-blue-500 mr-2">Edit</button>
+                  <button onClick={() => handleDelete('hall', t.hallId)} className="text-red-500">Delete</button>
                 </td></tr>)}
               </tbody>
             </table>
@@ -215,10 +243,10 @@ export default function AdminDashboard() {
               <button onClick={() => openForm('shows')} className="bg-green-500 text-white px-4 py-1 rounded">+ Add Show</button>
             </div>
             <table className="w-full">
-              <thead><tr><th>ID</th><th>Movie</th><th>Theater</th><th>Time</th><th>Price</th><th>Actions</th></tr></thead>
+              <thead><tr><th>ID</th><th>Movie</th><th>Hall</th><th>Time</th><th>Price</th><th>Actions</th></tr></thead>
               <tbody>
                 {shows.length === 0 ? <tr><td colSpan={6} className="text-center py-4">No shows yet</td></tr> :
-                shows.map(s => <tr key={s.showId}><td>{s.showId}</td><td>{s.movieName}</td><td>{s.theaterName}</td><td>{s.startTime}</td><td>${s.price}</td><td>
+                shows.map(s => <tr key={s.showId}><td>{s.showId}</td><td>{s.movieName}</td><td>{s.hallName}</td><td>{s.startTime}</td><td>${s.price}</td><td>
                   <button onClick={() => openForm('shows', s)} className="text-blue-500 mr-2">Edit</button>
                   <button onClick={() => handleDelete('show', s.showId)} className="text-red-500">Delete</button>
                 </td></tr>)}

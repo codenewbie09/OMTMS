@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class CreateShowDTO {
     private Long movieId;
-    private Long theaterId;
+    private Long hallId;
     private String startTime;
     private String endTime;
     private Double price;

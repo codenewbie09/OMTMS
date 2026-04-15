@@ -20,9 +20,9 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getMovieReport());
     }
     
-    @GetMapping("/theaters")
-    public ResponseEntity<ReportDTO> getTheaterReport() {
-        return ResponseEntity.ok(reportService.getTheaterReport());
+    @GetMapping("/halls")
+    public ResponseEntity<ReportDTO> getHallReport() {
+        return ResponseEntity.ok(reportService.getHallReport());
     }
     
     @GetMapping("/bookings")

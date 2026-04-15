@@ -26,10 +26,10 @@ public class QRCodeService {
         }
     }
     
-    public String generateTicketQRCode(String ticketCode, String movieName, String theaterName, String showTime, String seats) {
+    public String generateTicketQRCode(String ticketCode, String movieName, String hallName, String showTime, String seats) {
         String qrContent = String.format(
-            "TICKET:%s|MOVIE:%s|THEATER:%s|TIME:%s|SEATS:%s",
-            ticketCode, movieName, theaterName, showTime, seats
+            "TICKET:%s|MOVIE:%s|HALL:%s|TIME:%s|SEATS:%s",
+            ticketCode, movieName, hallName, showTime, seats
         );
         return generateQRCodeBase64(qrContent, 300, 300);
     }

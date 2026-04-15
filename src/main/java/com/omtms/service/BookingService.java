@@ -141,7 +141,7 @@ public class BookingService {
         String qrCode = qrCodeService.generateTicketQRCode(
             savedBooking.getTicketCode(),
             show.getMovie().getTitle(),
-            show.getTheater().getName(),
+            show.getHall().getName(),
             show.getStartTime() != null ? show.getStartTime().toString() : "",
             seatsStr
         );
@@ -276,7 +276,7 @@ public class BookingService {
         dto.setCustomerName(booking.getCustomer().getUser().getName());
         dto.setShowId(booking.getShow().getShowId());
         dto.setMovieName(booking.getShow().getMovie().getTitle());
-        dto.setTheaterName(booking.getShow().getTheater().getName());
+        dto.setHallName(booking.getShow().getHall().getName());
         dto.setShowTime(booking.getShow().getStartTime() != null ? 
             LocalDateTime.of(LocalDateTime.now().toLocalDate(), booking.getShow().getStartTime()) : null);
         dto.setBookingDate(booking.getBookingDate());

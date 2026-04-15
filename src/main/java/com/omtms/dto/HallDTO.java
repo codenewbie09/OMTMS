@@ -3,8 +3,8 @@ package com.omtms.dto;
 import lombok.Data;
 
 @Data
-public class TheaterDTO {
-    private Long theaterId;
+public class HallDTO {
+    private Long hallId;
     private String name;
     private String location;
     private Integer capacity;

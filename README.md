@@ -111,14 +111,14 @@ OMTMS/
 | PUT | /api/movies/{id} | Update movie |
 | DELETE | /api/movies/{id} | Delete movie |
 
-### Theaters
+### Halls
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /api/theaters | List all theaters |
-| GET | /api/theaters/{id} | Get theater by ID |
-| POST | /api/theaters | Add new theater |
-| PUT | /api/theaters/{id} | Update theater |
-| DELETE | /api/theaters/{id} | Delete theater |
+| GET | /api/halls | List all halls |
+| GET | /api/halls/{id} | Get hall by ID |
+| POST | /api/halls | Add new hall |
+| PUT | /api/halls/{id} | Update hall |
+| DELETE | /api/halls/{id} | Delete hall |
 
 ### Shows
 | Method | Endpoint | Description |
@@ -126,7 +126,7 @@ OMTMS/
 | GET | /api/shows | List all shows |
 | GET | /api/shows/{id} | Get show by ID |
 | GET | /api/shows/movie/{id} | Shows by movie |
-| GET | /api/shows/theater/{id} | Shows by theater |
+| GET | /api/shows/hall/{id} | Shows by hall |
 | GET | /api/shows/{id}/seats | Get seat availability |
 | POST | /api/shows | Create new show |
 | PUT | /api/shows/{id} | Update show |
@@ -193,10 +193,10 @@ Frontend runs on `http://localhost:5173`
 | Role | Email | Password |
 |------|-------|----------|
 | Admin | admin@omtms.com | admin123 |
-| Show Manager | showmanager@omtms.com | show123 |
-| Counter Staff | counter@omtms.com | counter123 |
-| Gate Staff | gate@omtms.com | gate123 |
-| Customer | customer@omtms.com | customer123 |
+| Show Manager | showmanager@omtms.com | admin123 |
+| Counter Staff | counter@omtms.com | admin123 |
+| Gate Staff | gate@omtms.com | admin123 |
+| Customer | customer@omtms.com | admin123 |
 
 ## User Roles & Permissions
 
